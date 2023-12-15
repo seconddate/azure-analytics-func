@@ -1,9 +1,26 @@
-# DO NOT include azure-functions-worker in this file
-# The Python Worker is managed by Azure Functions platform
-# Manually managing azure-functions-worker may cause unexpected issues
-
-azure-functions
-python-dotenv
-azure-storage-file-datalake
-azure-identity==1.10.2
-azure-storage-blob
+azure-core==1.29.5
+azure-functions==1.17.0
+azure-identity==1.11.0
+azure-storage-blob==12.19.0
+azure-storage-file-datalake==12.14.0
+certifi==2023.11.17
+cffi==1.16.0
+charset-normalizer==3.3.2
+cryptography==41.0.7
+idna==3.6
+isodate==0.6.1
+mccabe==0.7.0
+msal==1.26.0
+msal-extensions==1.1.0
+packaging==23.2
+portalocker==2.8.2
+pycodestyle==2.11.1
+pycparser==2.21
+PyJWT==2.8.0
+python-dotenv==1.0.0
+requests==2.31.0
+six==1.16.0
+tomli==2.0.1
+typing_extensions==4.9.0
+urllib3==2.1.0
+azure-eventhub
