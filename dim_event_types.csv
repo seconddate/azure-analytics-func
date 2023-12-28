@@ -1,0 +1,4 @@
+id,event_type_name,event_category_id,event_description,event_priority,created_by,created_at
+1,Sale,1,Sales-related events,High,Admin,2023-01-01
+2,Meeting,2,Meeting events,Normal,Admin,2023-01-01
+3,SalesMemo,1,Memo events,Low,Admin,2023-01-01

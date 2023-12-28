@@ -1,0 +1,4 @@
+id,employee_name,employee_position,employee_department,employee_email
+1,Kim Young,Manager,Sales,kim.young@abccorp.com
+2,Park Manager,COO,Marketing,park.manager@xyzltd.com
+3,Lee Sales,Representative,Sales,lee.sales@abccorp.com
