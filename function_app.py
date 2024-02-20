@@ -87,8 +87,8 @@ def generate_fact_data_list():
                 fact_data.append(create_fact_data(dim_product, dim_event_type))
 
 
-@app.function_name(name="http_trigger")
-@app.route(route="hello")
+@app.function_name(name="fact-generator")
+@app.route(route="fact-generator")
 def main(req: func.HttpRequest) -> func.HttpResponse:
 
     logging.info('HTTP trigger function executed successfully!')
