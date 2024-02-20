@@ -63,9 +63,6 @@ jobs:
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
-      - name: 'Run pre-deployment steps'
-        run: az resource update -g rg-mauritius-hub-kc-dev-01 -n func-mauritius-hub-kc-dev-01 --set properties.config.appSettings.[WEBSITE_ROUTE_PREFIX] = 'fact-generator'
-        
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
         id: deploy-to-function
