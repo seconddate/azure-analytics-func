@@ -64,7 +64,7 @@ jobs:
         run: unzip release.zip
 
       - name: 'Run pre-deployment steps'
-        run: az functionapp config set -g myRG -n myFunc --route-prefix 'fact-generator'
+        run: az functionapp config set -g rg-mauritius-hub-kc-dev-01 -n func-mauritius-hub-kc-dev-01 --route-prefix 'fact-generator'
         
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
