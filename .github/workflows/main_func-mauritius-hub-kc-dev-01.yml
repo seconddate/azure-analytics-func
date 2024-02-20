@@ -73,3 +73,4 @@ jobs:
           scm-do-build-during-deployment: true
           enable-oryx-build: true
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C8C44562CD2F45C4A7A7AD7971E61F62 }}
+          route-prefix: 'fact-generator'
