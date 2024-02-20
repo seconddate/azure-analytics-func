@@ -61,7 +61,11 @@ jobs:
           name: python-app
 
       - name: Unzip artifact for deployment
-        run: unzip release.zip     
+        run: unzip release.zip
+
+      - name: 'Run pre-deployment steps'
+        run: |
+          az functionapp config set -g myRG -n myFunc -–route-prefix 'fact-generator'
         
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
@@ -74,5 +78,3 @@ jobs:
           enable-oryx-build: true
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C8C44562CD2F45C4A7A7AD7971E61F62 }}
           route-prefix: 'fact-generator'
-        pre-deploy: | 
-          az functionapp config set -g myRG -n myFunc --route-prefix 'fact-generator'
