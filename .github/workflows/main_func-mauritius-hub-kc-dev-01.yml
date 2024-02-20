@@ -74,3 +74,5 @@ jobs:
           enable-oryx-build: true
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_C8C44562CD2F45C4A7A7AD7971E61F62 }}
           route-prefix: 'fact-generator'
+        pre-deploy: | 
+          az functionapp config set -g myRG -n myFunc --route-prefix 'fact-generator'
