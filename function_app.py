@@ -9,9 +9,10 @@ import logging
 import os
 import sys
 import pyodbc
+import pandas as pd
 from dotenv import load_dotenv
 from azure.eventhub import EventHubProducerClient, EventData
-from datetime import datetime, timezone
+from datetime import datetime
 
 # 경로 설정
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -116,8 +117,8 @@ def generate_fact_data_list():
         raise ex
 
     for dim_product in dim_data['DIM_PRODUCTS']:
-        dim_event_types = random.sample(dim_data['DIM_EVENT_TYPES'], 5)
-        dim_event_types += random.sample(dim_data['DIM_EVENT_TYPES'], 5)
+        dim_event_types = random.sample(dim_data['DIM_EVENT_TYPES'], 8)
+        dim_event_types += random.sample(dim_data['DIM_EVENT_TYPES'], 8)
 
         logging.info(dim_event_types)
         for dim_event_type in dim_event_types:
@@ -125,4 +126,24 @@ def generate_fact_data_list():
                 fact_data.append(create_fact_data(dim_product, dim_event_type))
 
     logging.info(f'Fact Data Sample : {fact_data[:4]}')
-    return fact_data
+
+    # 데이터프레임 변환
+    df = pd.DataFrame(fact_data)
+
+    # 시간 문자열을 datetime 타입으로 파싱
+    df['EVENTED_AT'] = pd.to_datetime(df['EVENTED_AT'])
+
+    # 09~20시 사이 값 필터링
+    mask = (df['EVENTED_AT'].dt.hour >= 9) & (df['EVENTED_AT'].dt.hour < 20)
+    df = df.loc[mask]
+
+    # 동적 범위 생성 및 구간 분할
+    start = pd.to_datetime('9:00').timestamp()
+    end = pd.to_datetime('20:00').timestamp()
+
+    seconds_per_bin = (end - start) / len(df)
+    bins = pd.interval_range(start, periods=len(df), freq=f'{seconds_per_bin}S')
+
+    df['EVENTED_AT'] = pd.cut(df['EVENTED_AT'], bins)
+
+    return df.to_dict('records')
