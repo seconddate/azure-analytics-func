@@ -159,7 +159,7 @@ def generate_fact_data_list():
     start = pd.to_datetime('9:00').timestamp()
     end = pd.to_datetime('20:00').timestamp()
 
-    seconds_per_bin = (end - start) / len(df)
+    seconds_per_bin = (end - start).seconds / len(df)
     freq_str = str(int(seconds_per_bin)) + 'S'
     bins = pd.interval_range(start, periods=len(df), freq=freq_str)
 
