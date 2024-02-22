@@ -22,6 +22,30 @@ app = func.FunctionApp()
 load_dotenv()
 
 
+@app.function_name(name="fact-generator")
+@app.route(route="fact-generator")
+def main(req: func.HttpRequest) -> func.HttpResponse:
+
+    logging.info('HTTP trigger function executed successfully!')
+
+    # Private Event Hub 연결 정보
+    eventhub_name = os.environ['EVENTHUB_NAME']
+    eventhub_connection = os.environ['EVENT_HUB_CONNECTION']
+
+    fact_data = generate_fact_data_list()
+
+    # Event Hub 전송 로직
+    client = EventHubProducerClient.from_connection_string(eventhub_connection, eventhub_name)
+    event_data_batch = client.create_batch()
+
+    for data in fact_data:
+        event_data_batch.add(EventData(str(data)))
+
+    client.send_batch(event_data_batch)
+
+    return func.HttpResponse(f"Sent {len(fact_data)} items")
+
+
 def get_mssql_connect():
     server = os.environ['MSSQL_SERVER']
     database = os.environ['MSSQL_DATABASE']
@@ -66,7 +90,10 @@ def generate_fact_data_list():
     fact_data = []
     dim_data = {}
     dim_tables = ['DIM_EVENT_TYPES', 'DIM_PRODUCTS']
-    conn = get_mssql_connect()
+    try:
+        conn = get_mssql_connect()
+    except Exception as ex:
+        logging.error(f'MSSQL Connection Fail. Error: {str(ex)}')
 
     cursor = conn.cursor()
 
@@ -85,27 +112,3 @@ def generate_fact_data_list():
         for dim_event_type in dim_event_types:
             if dim_event_type['NAME'] != '잔금 지불':
                 fact_data.append(create_fact_data(dim_product, dim_event_type))
-
-
-@app.function_name(name="fact-generator")
-@app.route(route="fact-generator")
-def main(req: func.HttpRequest) -> func.HttpResponse:
-
-    logging.info('HTTP trigger function executed successfully!')
-
-    # Private Event Hub 연결 정보
-    eventhub_name = os.environ['EVENTHUB_NAME']
-    eventhub_connection = os.environ['EVENT_HUB_CONNECTION']
-
-    fact_data = generate_fact_data_list()
-
-    # Event Hub 전송 로직
-    client = EventHubProducerClient.from_connection_string(eventhub_connection, eventhub_name)
-    event_data_batch = client.create_batch()
-
-    for data in fact_data:
-        event_data_batch.add(EventData(str(data)))
-
-    client.send_batch(event_data_batch)
-
-    return func.HttpResponse(f"Sent {len(fact_data)} items")
