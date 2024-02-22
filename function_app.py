@@ -32,16 +32,19 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     eventhub_name = os.environ['EVENTHUB_NAME']
     eventhub_connection = os.environ['EVENT_HUB_CONNECTION']
 
-    fact_data = generate_fact_data_list()
+    try:
+        fact_data = generate_fact_data_list()
 
-    # Event Hub 전송 로직
-    client = EventHubProducerClient.from_connection_string(eventhub_connection, eventhub_name)
-    event_data_batch = client.create_batch()
+        # Event Hub 전송 로직
+        client = EventHubProducerClient.from_connection_string(eventhub_connection, eventhub_name)
+        event_data_batch = client.create_batch()
 
-    for data in fact_data:
-        event_data_batch.add(EventData(str(data)))
+        for data in fact_data:
+            event_data_batch.add(EventData(str(data)))
 
-    client.send_batch(event_data_batch)
+        client.send_batch(event_data_batch)
+    except Exception as ex:
+        logging.error(f'Error : {str(ex)}')
 
     return func.HttpResponse(f"Sent {len(fact_data)} items")
 
@@ -105,6 +108,7 @@ def generate_fact_data_list():
             dim_data[dim_table] = cursor.execute(query)
     except Exception as ex:
         logging.error(f'MSSQL Connection Fail. Error: {str(ex)}')
+        raise ex
 
     for dim_product in dim_tables['DIM_PRODUCTS']:
         dim_event_types = random.sample(dim_tables['DIM_EVENT_TYPES'], 5)
