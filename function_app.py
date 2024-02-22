@@ -54,8 +54,9 @@ def get_mssql_connect():
     port = os.environ['MSSQL_PORT']
 
     # MSSQL 연결
-    return pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER='+server +
-                          ';DATABASE='+database+';UID='+username+';PWD=' + password + ';PORT=' + port)
+    conn_str = f'DRIVER={{ODBC Driver 17 for SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password};PORT={port}'
+    logging.info(f'MSSQL Connection String -> {conn_str}')
+    return pyodbc.connect(conn_str)
 
 
 def create_fact_data(dim_product, dim_event_type):
