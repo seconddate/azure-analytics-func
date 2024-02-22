@@ -74,17 +74,17 @@ def create_fact_data(dim_product, dim_event_type):
         'SPENT_AMOUNT': 0
     }
 
-    if non_billable_list not in dim_event_type['NAME']:
+    if non_billable_list not in dim_event_type['EVENT_TYPE_NAME']:
         first_digit = random.randint(1, 9)
-        if dim_event_type['NAME'] == '계약금 지불':
+        if dim_event_type['EVENT_TYPE_NAME'] == '계약금 지불':
             fact_data['RECEIVED_AMOUNT'] = dim_product['PRODUCT_PRICE'] * 0.05
-        elif dim_event_type['NAME'] == '교육':
+        elif dim_event_type['EVENT_TYPE_NAME'] == '교육':
             fact_data['RECEIVED_AMOUNT'] = first_digit * 10000
-        elif dim_event_type['NAME'] == '워크샵':
+        elif dim_event_type['EVENT_TYPE_NAME'] == '워크샵':
             fact_data['RECEIVED_AMOUNT'] = first_digit * 10000
-        elif dim_event_type['NAME'] == '출장':
+        elif dim_event_type['EVENT_TYPE_NAME'] == '출장':
             fact_data['SPENT_AMOUNT'] = round(random.randint(100000, 300000), -2)
-        elif dim_event_type['NAME'] == '고객 대접':
+        elif dim_event_type['EVENT_TYPE_NAME'] == '고객 대접':
             fact_data['SPENT_AMOUNT'] = round(random.randint(100000, 1000000), -2)
 
     return fact_data
@@ -109,7 +109,7 @@ def generate_fact_data_list():
             columns = [column[0] for column in cursor.description]
             results = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-            logging.info(results)
+            # logging.info(results)
             dim_data[dim_table] = results
     except Exception as ex:
         logging.error(f'MSSQL Connection Fail. Error: {str(ex)}')
