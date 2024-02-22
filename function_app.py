@@ -112,9 +112,9 @@ def generate_fact_data_list():
         logging.error(f'MSSQL Connection Fail. Error: {str(ex)}')
         raise ex
 
-    for dim_product in dim_tables['DIM_PRODUCTS']:
-        dim_event_types = random.sample(dim_tables['DIM_EVENT_TYPES'], 5)
-        dim_event_types += random.sample(dim_tables['DIM_EVENT_TYPES'], 5)
+    for dim_product in dim_data['DIM_PRODUCTS']:
+        dim_event_types = random.sample(dim_data['DIM_EVENT_TYPES'], 5)
+        dim_event_types += random.sample(dim_data['DIM_EVENT_TYPES'], 5)
 
         for dim_event_type in dim_event_types:
             if dim_event_type['NAME'] != '잔금 지불':
