@@ -25,7 +25,8 @@ load_dotenv()
 
 @app.function_name(name="fact-generator")
 @app.route(route="fact-generator")
-def main(req: func.HttpRequest) -> func.HttpResponse:
+def test_function(req: func.HttpRequest) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
 
     logging.info('HTTP trigger function executed successfully!')
 
@@ -48,6 +49,33 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.error(f'Error : {str(ex)}')
 
     return func.HttpResponse(f"Sent {len(fact_data)} items")
+
+
+@app.function_name(name="fact-timer")
+@app.schedule(schedule="0 0 1 * * *", arg_name="facttimer", run_on_startup=True, use_monitor=False)
+def main(facttimer: func.TimerRequest) -> None:
+
+    logging.info('Time trigger function executed successfully!')
+
+    # Private Event Hub 연결 정보
+    eventhub_name = os.environ['EVENTHUB_NAME']
+    eventhub_connection = os.environ['EVENT_HUB_CONNECTION']
+
+    try:
+        fact_data = generate_fact_data_list()
+
+        # Event Hub 전송 로직
+        client = EventHubProducerClient.from_connection_string(eventhub_connection, eventhub_name)
+        event_data_batch = client.create_batch()
+
+        for data in fact_data:
+            event_data_batch.add(EventData(str(data)))
+
+        client.send_batch(event_data_batch)
+    except Exception as ex:
+        logging.error(f'Error : {str(ex)}')
+
+    logging.info(f"Sent {len(fact_data)} items")
 
 
 def get_mssql_connect():
@@ -120,7 +148,6 @@ def generate_fact_data_list():
         dim_event_types = random.sample(dim_data['DIM_EVENT_TYPES'], 8)
         dim_event_types += random.sample(dim_data['DIM_EVENT_TYPES'], 8)
 
-        logging.info(dim_event_types)
         for dim_event_type in dim_event_types:
             if dim_event_type['EVENT_TYPE_NAME'] != '잔금 지불':
                 fact_data.append(create_fact_data(dim_product, dim_event_type))
