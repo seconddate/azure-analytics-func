@@ -154,23 +154,15 @@ def generate_fact_data_list():
 
     logging.info(f'Fact Data Sample : {fact_data[:4]}')
 
-    # 데이터프레임 변환
     df = pd.DataFrame(fact_data)
 
-    # 시간 문자열을 datetime 타입으로 파싱
-    df['EVENTED_AT'] = pd.to_datetime(df['EVENTED_AT'])
-
-    # 09~20시 사이 값 필터링
-    mask = (df['EVENTED_AT'].dt.hour >= 9) & (df['EVENTED_AT'].dt.hour < 20)
-    df = df.loc[mask]
-
-    # 동적 범위 생성 및 구간 분할
     start = pd.to_datetime('9:00').timestamp()
     end = pd.to_datetime('20:00').timestamp()
 
     seconds_per_bin = (end - start) / len(df)
     bins = pd.interval_range(start, periods=len(df), freq=f'{seconds_per_bin}S')
 
-    df['EVENTED_AT'] = pd.cut(df['EVENTED_AT'], bins)
+    df['event_at_group'] = pd.cut(df['EVENT_AT'], bins)
 
+    # 결과 반환
     return df.to_dict('records')
