@@ -105,8 +105,10 @@ def generate_fact_data_list():
                 FROM {dim_table}
                 ORDER BY NEWID()
             """
-            results = cursor.execute(query).fetchall()
-            logging.info(results)
+            cursor.execute(query)
+            columns = [column[0] for column in cursor.description]
+            results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
             dim_data[dim_table] = results
     except Exception as ex:
         logging.error(f'MSSQL Connection Fail. Error: {str(ex)}')
