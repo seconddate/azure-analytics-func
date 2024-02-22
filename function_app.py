@@ -119,6 +119,7 @@ def generate_fact_data_list():
         dim_event_types = random.sample(dim_data['DIM_EVENT_TYPES'], 5)
         dim_event_types += random.sample(dim_data['DIM_EVENT_TYPES'], 5)
 
+        logging.info(dim_event_types)
         for dim_event_type in dim_event_types:
             if dim_event_type['EVENT_TYPE_NAME'] != '잔금 지불':
                 fact_data.append(create_fact_data(dim_product, dim_event_type))
