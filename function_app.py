@@ -74,7 +74,7 @@ def create_fact_data(dim_product, dim_event_type):
         'SPENT_AMOUNT': 0
     }
 
-    if non_billable_list not in dim_event_type['EVENT_TYPE_NAME']:
+    if dim_event_type['EVENT_TYPE_NAME'] not in non_billable_list:
         first_digit = random.randint(1, 9)
         if dim_event_type['EVENT_TYPE_NAME'] == '계약금 지불':
             fact_data['RECEIVED_AMOUNT'] = dim_product['PRODUCT_PRICE'] * 0.05
