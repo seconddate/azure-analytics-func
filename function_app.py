@@ -123,5 +123,5 @@ def generate_fact_data_list():
             if dim_event_type['EVENT_TYPE_NAME'] != '잔금 지불':
                 fact_data.append(create_fact_data(dim_product, dim_event_type))
 
-    logging.info(f'Fact Data Sample : {fact_data[0:4]}')
+    logging.info(f'Fact Data Sample : {fact_data[:4]}')
     return fact_data
