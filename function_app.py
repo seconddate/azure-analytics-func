@@ -93,18 +93,18 @@ def generate_fact_data_list():
     dim_tables = ['DIM_EVENT_TYPES', 'DIM_PRODUCTS']
     try:
         conn = get_mssql_connect()
+        cursor = conn.cursor()
+        logging.info('MSSQL Connection Success.')
+
+        for dim_table in dim_tables:
+            query = f"""
+                SELECT TOP 2000 *
+                FROM {dim_table}
+                ORDER BY NEWID()
+            """
+            dim_data[dim_table] = cursor.execute(query)
     except Exception as ex:
         logging.error(f'MSSQL Connection Fail. Error: {str(ex)}')
-
-    cursor = conn.cursor()
-
-    for dim_table in dim_tables:
-        query = f"""
-            SELECT TOP 2000 *
-            FROM {dim_table}
-            ORDER BY NEWID()
-        """
-        dim_data[dim_table] = cursor.execute(query)
 
     for dim_product in dim_tables['DIM_PRODUCTS']:
         dim_event_types = random.sample(dim_tables['DIM_EVENT_TYPES'], 5)
