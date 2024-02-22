@@ -160,7 +160,8 @@ def generate_fact_data_list():
     end = pd.to_datetime('20:00').timestamp()
 
     seconds_per_bin = (end - start) / len(df)
-    bins = pd.interval_range(start, periods=len(df), freq=f'{seconds_per_bin}S')
+    freq_str = str(int(seconds_per_bin)) + 'S'
+    bins = pd.interval_range(start, periods=len(df), freq=freq_str)
 
     df['event_at_group'] = pd.cut(df['EVENT_AT'], bins)
 
