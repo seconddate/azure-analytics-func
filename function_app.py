@@ -38,7 +38,8 @@ def test_function(req: func.HttpRequest) -> func.HttpResponse:
         fact_data = generate_fact_data_list()
 
         # Event Hub 전송 로직
-        client = EventHubProducerClient.from_connection_string(eventhub_connection, eventhub_name)
+        client = EventHubProducerClient.from_connection_string(
+            conn_str=eventhub_connection, eventhub_name=eventhub_name)
         event_data_batch = client.create_batch()
 
         for data in fact_data:
