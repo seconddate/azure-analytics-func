@@ -42,27 +42,23 @@ def test_function(req: func.HttpRequest) -> func.HttpResponse:
         fact_data = generate_fact_data_list()
         total_sent = 0
 
-        for i in range(0, len(fact_data), 100):  # 한 번에 100개씩 묶음
+        for i in range(0, len(fact_data), 100):
+            logging.info(f'{i+1}번째 실행 중...')
             event_data_batch = client.create_batch()
-            for data in fact_data[i:i+100]:  # 100개의 데이터를 batch에 추가
+            for data in fact_data[i:i+100]:
                 event_data_batch.add(EventData(str(data)))
 
             client.send_batch(event_data_batch)
             total_sent += len(event_data_batch)
 
-            # 1초 기다리지 않고 바로 다음 배치를 전송하기 위해 남은 시간 계산
             time_to_wait = 1 - (time.time() % 1)
             if time_to_wait > 0:
                 time.sleep(time_to_wait)
 
-        event_data_batch = client.create_batch()
-
-        for data in fact_data:
-            event_data_batch.add(EventData(str(data)))
-
-        client.send_batch(event_data_batch)
     except Exception as ex:
         logging.error(f'Error : {str(ex)}')
+    finally:
+        client.close()
 
     return func.HttpResponse(f"Sent {len(fact_data)} items")
 
@@ -84,16 +80,15 @@ def main(facttimer: func.TimerRequest) -> None:
         fact_data = generate_fact_data_list()
         total_sent = 0
 
-        for i in range(0, len(fact_data), 100):  # 한 번에 100개씩 묶음
+        for i in range(0, len(fact_data), 100):
             logging.info(f'{i+1}번째 실행 중...')
             event_data_batch = client.create_batch()
-            for data in fact_data[i:i+100]:  # 100개의 데이터를 batch에 추가
+            for data in fact_data[i:i+100]:
                 event_data_batch.add(EventData(str(data)))
 
             client.send_batch(event_data_batch)
             total_sent += len(event_data_batch)
 
-            # 1초 기다리지 않고 바로 다음 배치를 전송하기 위해 남은 시간 계산
             time_to_wait = 1 - (time.time() % 1)
             if time_to_wait > 0:
                 time.sleep(time_to_wait)
@@ -103,7 +98,7 @@ def main(facttimer: func.TimerRequest) -> None:
     finally:
         client.close()
 
-    return func.HttpResponse(f"Sent {len(fact_data)} items")
+    logging.info(f"Sent {len(fact_data)} items")
 
 
 def get_mssql_connect():
