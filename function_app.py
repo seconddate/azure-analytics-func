@@ -34,12 +34,26 @@ def test_function(req: func.HttpRequest) -> func.HttpResponse:
     eventhub_name = os.environ['EVENTHUB_NAME']
     eventhub_connection = os.environ['EVENT_HUB_CONNECTION']
 
+    # Event Hub 전송 로직
+    client = EventHubProducerClient.from_connection_string(conn_str=eventhub_connection, eventhub_name=eventhub_name)
+
     try:
         fact_data = generate_fact_data_list()
+        total_sent = 0
 
-        # Event Hub 전송 로직
-        client = EventHubProducerClient.from_connection_string(
-            conn_str=eventhub_connection, eventhub_name=eventhub_name)
+        for i in range(0, len(fact_data), 100):  # 한 번에 100개씩 묶음
+            event_data_batch = client.create_batch()
+            for data in fact_data[i:i+100]:  # 100개의 데이터를 batch에 추가
+                event_data_batch.add(EventData(str(data)))
+
+            client.send_batch(event_data_batch)
+            total_sent += len(event_data_batch)
+
+            # 1초 기다리지 않고 바로 다음 배치를 전송하기 위해 남은 시간 계산
+            time_to_wait = 1 - (time.time() % 1)
+            if time_to_wait > 0:
+                time.sleep(time_to_wait)
+
         event_data_batch = client.create_batch()
 
         for data in fact_data:
@@ -62,12 +76,26 @@ def main(facttimer: func.TimerRequest) -> None:
     eventhub_name = os.environ['EVENTHUB_NAME']
     eventhub_connection = os.environ['EVENT_HUB_CONNECTION']
 
+    # Event Hub 전송 로직
+    client = EventHubProducerClient.from_connection_string(conn_str=eventhub_connection, eventhub_name=eventhub_name)
+
     try:
         fact_data = generate_fact_data_list()
+        total_sent = 0
 
-        # Event Hub 전송 로직
-        client = EventHubProducerClient.from_connection_string(
-            conn_str=eventhub_connection, eventhub_name=eventhub_name)
+        for i in range(0, len(fact_data), 100):  # 한 번에 100개씩 묶음
+            event_data_batch = client.create_batch()
+            for data in fact_data[i:i+100]:  # 100개의 데이터를 batch에 추가
+                event_data_batch.add(EventData(str(data)))
+
+            client.send_batch(event_data_batch)
+            total_sent += len(event_data_batch)
+
+            # 1초 기다리지 않고 바로 다음 배치를 전송하기 위해 남은 시간 계산
+            time_to_wait = 1 - (time.time() % 1)
+            if time_to_wait > 0:
+                time.sleep(time_to_wait)
+
         event_data_batch = client.create_batch()
 
         for data in fact_data:
@@ -77,7 +105,7 @@ def main(facttimer: func.TimerRequest) -> None:
     except Exception as ex:
         logging.error(f'Error : {str(ex)}')
 
-    logging.info(f"Sent {len(fact_data)} items")
+    return func.HttpResponse(f"Sent {len(fact_data)} items")
 
 
 def get_mssql_connect():
@@ -110,9 +138,9 @@ def create_fact_data(dim_product, dim_event_type):
         if dim_event_type['EVENT_TYPE_NAME'] == '계약금 지불':
             fact_data['RECEIVED_AMOUNT'] = dim_product['PRODUCT_PRICE'] * 0.05
         elif dim_event_type['EVENT_TYPE_NAME'] == '교육':
-            fact_data['RECEIVED_AMOUNT'] = first_digit * 10000
+            fact_data['RECEIVED_AMOUNT'] = first_digit * 100000
         elif dim_event_type['EVENT_TYPE_NAME'] == '워크샵':
-            fact_data['RECEIVED_AMOUNT'] = first_digit * 10000
+            fact_data['RECEIVED_AMOUNT'] = first_digit * 100000
         elif dim_event_type['EVENT_TYPE_NAME'] == '출장':
             fact_data['SPENT_AMOUNT'] = round(random.randint(100000, 300000), -2)
         elif dim_event_type['EVENT_TYPE_NAME'] == '고객 대접':
