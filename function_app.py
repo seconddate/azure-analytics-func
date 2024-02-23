@@ -164,9 +164,9 @@ def generate_fact_data_list():
 
     bins = pd.date_range(start, periods=len(df), freq=freq_str)
 
-    df['EVENT_AT'] = pd.to_datetime(df['EVENT_AT'])
+    df['EVENTED_AT'] = pd.to_datetime(df['EVENTED_AT'])
 
-    df['event_at_group'] = pd.cut(df['EVENT_AT'], bins=bins)
+    df['event_at_group'] = pd.cut(df['EVENTED_AT'], bins=bins)
 
     # 결과 반환
     return df.to_dict('records')
