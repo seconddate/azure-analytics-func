@@ -9,6 +9,7 @@ import logging
 import os
 import sys
 import pyodbc
+import time
 import pandas as pd
 from dotenv import load_dotenv
 from azure.eventhub import EventHubProducerClient, EventData
