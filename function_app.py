@@ -178,8 +178,6 @@ def generate_fact_data_list():
             if dim_event_type['EVENT_TYPE_NAME'] != '잔금 지불':
                 fact_data.append(create_fact_data(dim_product, dim_event_type))
 
-    logging.info(f'Fact Data Sample : {fact_data[:4]}')
-
     df = pd.DataFrame(fact_data)
 
     start = pd.to_datetime('9:00')
@@ -194,7 +192,8 @@ def generate_fact_data_list():
     df['event_at_group'] = pd.cut(df['EVENTED_AT'], bins=bins)
     df['EVENTED_AT'] = df['EVENTED_AT'].astype(str)
 
-    return_dict = df.to_dict('records')
-    logging.info(f"Start Sent {len(return_dict)} items")
+    fact_data = df.to_dict('records')
+    logging.info(f"Start Sent {len(fact_data)} items")
+    logging.info(f'Fact Data Sample : {fact_data[:4]}')
 
-    return return_dict
+    return fact_data
