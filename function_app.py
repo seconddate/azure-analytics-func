@@ -194,7 +194,7 @@ def generate_fact_data_list():
     df['event_at_group'] = pd.cut(df['EVENTED_AT'], bins=bins)
     df['EVENTED_AT'] = df['EVENTED_AT'].dt.strftime('%Y-%m-%d %H:%M:%S')
 
-    return_dict = df.to_dict('recoreds')
+    return_dict = df.to_dict('records')
     logging.info(f"Start Sent {len(return_dict)} items")
 
     return return_dict
