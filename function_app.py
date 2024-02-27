@@ -132,7 +132,7 @@ def create_fact_data(dim_product, dim_event_type):
     if dim_event_type['EVENT_TYPE_NAME'] not in non_billable_list:
         first_digit = random.randint(1, 9)
         if dim_event_type['EVENT_TYPE_NAME'] == '계약금 지불':
-            fact_data['RECEIVED_AMOUNT'] = dim_product['PRODUCT_PRICE'] * 0.05
+            fact_data['RECEIVED_AMOUNT'] = round(dim_product['PRODUCT_PRICE'] * 0.05, -2)
         elif dim_event_type['EVENT_TYPE_NAME'] == '교육':
             fact_data['RECEIVED_AMOUNT'] = first_digit * 100000
         elif dim_event_type['EVENT_TYPE_NAME'] == '워크샵':
@@ -192,7 +192,7 @@ def generate_fact_data_list():
 
     df['EVENTED_AT'] = pd.to_datetime(df['EVENTED_AT'])
     df['event_at_group'] = pd.cut(df['EVENTED_AT'], bins=bins)
-    df['EVENTED_AT'] = df['EVENTED_AT'].dt.strftime('%Y-%m-%d %H:%M:%S')
+    df['EVENTED_AT'] = df['EVENTED_AT'].astype(str)
 
     return_dict = df.to_dict('records')
     logging.info(f"Start Sent {len(return_dict)} items")
