@@ -10,7 +10,9 @@ import os
 import sys
 import pyodbc
 import time
+import json
 import pandas as pd
+
 from dotenv import load_dotenv
 from azure.eventhub import EventHubProducerClient, EventData
 from datetime import datetime
@@ -46,7 +48,7 @@ def test_function(req: func.HttpRequest) -> func.HttpResponse:
             logging.info(f'{i+1}번째 실행 중...')
             event_data_batch = client.create_batch()
             for data in fact_data[i:i+100]:
-                event_data_batch.add(EventData(str(data)))
+                event_data_batch.add(EventData(json.dumps(data)))
 
             client.send_batch(event_data_batch)
             total_sent += len(event_data_batch)
@@ -84,7 +86,7 @@ def main(facttimer: func.TimerRequest) -> None:
             logging.info(f'{i+1}번째 실행 중...')
             event_data_batch = client.create_batch()
             for data in fact_data[i:i+100]:
-                event_data_batch.add(EventData(str(data)))
+                event_data_batch.add(EventData(json.dumps(data)))
 
             client.send_batch(event_data_batch)
             total_sent += len(event_data_batch)
