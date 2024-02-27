@@ -180,7 +180,7 @@ def generate_fact_data_list():
 
     df = pd.DataFrame(fact_data)
 
-    df['EVENTED_AT'] = pd.to_datetime(df['EVENTED_AT'])
+    df['EVENTED_AT'] = pd.to_datetime(df['EVENTED_AT']).dt.tz_localize('UTC').dt.tz_convert('Asia/Seoul')
     df['EVENTED_AT'] = df['EVENTED_AT'].astype(str)
 
     fact_data = df.to_dict('records')

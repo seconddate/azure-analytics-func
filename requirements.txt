@@ -26,3 +26,4 @@ urllib3==2.1.0
 azure-eventhub
 pyodbc==5.1.0
 pandas==2.2.0
+pytz
