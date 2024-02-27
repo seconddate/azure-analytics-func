@@ -180,16 +180,7 @@ def generate_fact_data_list():
 
     df = pd.DataFrame(fact_data)
 
-    start = pd.to_datetime('9:00')
-    end = pd.to_datetime('20:00')
-
-    seconds_per_bin = (end - start) / len(df)
-    freq_str = f"{int(seconds_per_bin.total_seconds())}S"
-
-    bins = pd.date_range(start, periods=len(df), freq=freq_str)
-
     df['EVENTED_AT'] = pd.to_datetime(df['EVENTED_AT'])
-    df['event_at_group'] = pd.cut(df['EVENTED_AT'], bins=bins)
     df['EVENTED_AT'] = df['EVENTED_AT'].astype(str)
 
     fact_data = df.to_dict('records')
