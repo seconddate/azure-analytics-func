@@ -62,7 +62,8 @@ def test_function(req: func.HttpRequest) -> func.HttpResponse:
     finally:
         client.close()
 
-    return func.HttpResponse(f"Sent {len(fact_data)} items")
+    logging.info(f"Finish Sent {total_sent} items")
+    return func.HttpResponse(f"Finish Sent {total_sent} items")
 
 
 @app.function_name(name="fact-timer")
@@ -100,7 +101,7 @@ def main(facttimer: func.TimerRequest) -> None:
     finally:
         client.close()
 
-    logging.info(f"Sent {len(fact_data)} items")
+    logging.info(f"Finish Sent {total_sent} items")
 
 
 def get_mssql_connect():
@@ -191,6 +192,9 @@ def generate_fact_data_list():
 
     df['EVENTED_AT'] = pd.to_datetime(df['EVENTED_AT'])
     df['event_at_group'] = pd.cut(df['EVENTED_AT'], bins=bins)
-    df['EVENTED_AT'] = df['EVENTED_AT'].dt.strftime('%Y-%m-%dT%H:%M:%S')
+    df['EVENTED_AT'] = df['EVENTED_AT'].dt.strftime('%Y-%m-%d %H:%M:%S')
 
-    return df.to_dict('records')
+    return_dict = df.to_dict('recoreds')
+    logging.info(f"Start Sent {len(return_dict)} items")
+
+    return return_dict
